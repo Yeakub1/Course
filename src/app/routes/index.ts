@@ -2,6 +2,7 @@ import { ReviewRoute } from './../modules/Reviews/Review.route';
 import { Router } from 'express';
 import { courseRoute } from '../modules/Courses/Course.route';
 import { CategoryRoute } from '../modules/Category/Category.route';
+import { UserRoute } from '../modules/User/User.route';
 
 
 const router = Router();
@@ -22,6 +23,10 @@ const moduleRoute = [
   {
     path: '/reviews',
     route: ReviewRoute,
+  },
+  {
+    path: '/auth',
+    route: UserRoute,
   },
 ];
 

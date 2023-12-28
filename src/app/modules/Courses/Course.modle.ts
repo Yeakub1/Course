@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { TTag, TCourseDetails, TCourse, courseModle } from './Course.interface';
+import { reviewModel } from '../Reviews/Review.model';
 
 const courseTagSchema = new Schema<TTag>({
   name: {
@@ -19,7 +20,6 @@ const courseDetailsSchema = new Schema<TCourseDetails>({
   description: { type: String, required: [true, 'description is Required'] },
 });
 
-
 const courseSchema = new Schema<TCourse>(
   {
     title: { type: String, required: true, unique: true },
@@ -33,6 +33,7 @@ const courseSchema = new Schema<TCourse>(
     provider: { type: String, required: true },
     durationInWeeks: { type: Number },
     details: { type: courseDetailsSchema, required: true },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'user' },
   },
   {
     toJSON: {
@@ -42,10 +43,18 @@ const courseSchema = new Schema<TCourse>(
 );
 
 courseSchema.virtual('reviews', {
-  ref: 'reviews',
+  ref: reviewModel,
   localField: '_id',
   foreignField: 'courseId',
   justOne: false,
+});
+
+courseSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret.passwordHistory;
+    delete ret.__v;
+    return ret;
+  },
 });
 
 courseSchema.pre('save', function (next) {
@@ -59,6 +68,4 @@ courseSchema.pre('save', function (next) {
   next();
 });
 
-
 export const Courses = model<TCourse, courseModle>('Courses', courseSchema);
-

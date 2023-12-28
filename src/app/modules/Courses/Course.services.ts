@@ -37,6 +37,7 @@ const getAllCourseFromDB = async (
   }
 
   const result = await Courses.find(query)
+    .populate('createdBy')
     .sort(sortCriteria)
     .skip((page - 1) * limit)
     .limit(Number(limit))
@@ -52,7 +53,13 @@ const getAllCourseFromDB = async (
 };
 
 const getSingleCourseFromDB = async (id: string) => {
-  const result = await Courses.findById(id).populate('categoryId');
+  const result = await Courses.findById(id)
+    .populate('categoryId')
+    .populate('createdBy')
+    .populate({
+      path: 'reviews',
+      populate: { path: 'createdBy', options: { strictPopulate: false } },
+    });
   return result;
 };
 
@@ -145,7 +152,12 @@ const updateCourseFromDB = async (
 const getSingleCourseReviewFromDb = async (courseId: string) => {
   const result = await Courses.findById(courseId)
     .populate('categoryId')
-    .populate('reviews');
+    .populate('createdBy')
+    .populate({
+      path: 'reviews',
+      populate: { path: 'createdBy', options: { strictPopulate: false } },
+    })
+    .exec();
   if (!result) {
     throw new Error('course is not found');
   }
