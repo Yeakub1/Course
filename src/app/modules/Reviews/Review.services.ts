@@ -2,7 +2,7 @@ import { TReview } from './Review.interface';
 import { reviewModel } from './Review.model';
 
 const createReviewIntoDB = async (payload: TReview) => {
-  const result = await reviewModel.create(payload);
+  const result = (await reviewModel.create(payload)).populate('createdBy');
   return result;
 };
 

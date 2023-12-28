@@ -5,7 +5,8 @@ import { CategoryServices } from "./Category.services";
 
 const createCategory = catchAsync(async (req, res) => {
   const category = req.body;
-  category.createdBy= req.user?._id
+  category.createdBy = req.user?._id
+ 
   const result = await CategoryServices.createCategoryIntoDB(category);
   sendResponse(res, {
     statusCode: httpStatus.OK,

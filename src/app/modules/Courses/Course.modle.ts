@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { TTag, TCourseDetails, TCourse, courseModle } from './Course.interface';
-import { reviewModel } from '../Reviews/Review.model';
+
 
 const courseTagSchema = new Schema<TTag>({
   name: {
@@ -43,7 +43,7 @@ const courseSchema = new Schema<TCourse>(
 );
 
 courseSchema.virtual('reviews', {
-  ref: reviewModel,
+  ref: 'Review',
   localField: '_id',
   foreignField: 'courseId',
   justOne: false,

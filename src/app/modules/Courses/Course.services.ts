@@ -153,11 +153,8 @@ const getSingleCourseReviewFromDb = async (courseId: string) => {
   const result = await Courses.findById(courseId)
     .populate('categoryId')
     .populate('createdBy')
-    .populate({
-      path: 'reviews',
-      populate: { path: 'createdBy', options: { strictPopulate: false } },
-    })
-    .exec();
+   .populate('reviews')
+    
   if (!result) {
     throw new Error('course is not found');
   }
