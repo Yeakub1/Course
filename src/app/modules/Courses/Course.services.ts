@@ -150,17 +150,6 @@ const updateCourseFromDB = async (
   }
 };
 
-// const getSingleCourseReviewFromDb = async (courseId: string) => {
-//   const result = await Courses.findById(courseId)
-//     .populate('categoryId')
-//     .populate('createdBy')
-//    .populate('reviews')
-
-//   if (!result) {
-//     throw new Error('course is not found');
-//   }
-//   return result;
-// };
 const getSingleCourseReviewFromDb = async (courseId: string) => {
   const result = await Courses.aggregate([
     {
@@ -168,7 +157,7 @@ const getSingleCourseReviewFromDb = async (courseId: string) => {
     },
     {
       $lookup: {
-        from: 'categories', // Replace with the actual name of your categories collection
+        from: 'categories', 
         localField: '_id',
         foreignField: 'categoryId',
         as: 'category',
@@ -176,7 +165,7 @@ const getSingleCourseReviewFromDb = async (courseId: string) => {
     },
     {
       $lookup: {
-        from: 'users', // Replace with the actual name of your users collection
+        from: 'users', 
         localField: 'createdBy',
         foreignField: '_id',
         as: 'createdByUser',
@@ -184,7 +173,7 @@ const getSingleCourseReviewFromDb = async (courseId: string) => {
     },
     {
       $lookup: {
-        from: 'reviews', // Replace with the actual name of your reviews collection
+        from: 'reviews', 
         localField: '_id',
         foreignField: 'courseId',
         as: 'courseReviews',
@@ -196,7 +185,7 @@ const getSingleCourseReviewFromDb = async (courseId: string) => {
     throw new Error('Course not found');
   }
 
-  return result[0]; // Assuming you expect only one result since you are querying by courseId
+  return result[0]; 
 };
 
 const getBestCourseFormDb = async () => {
