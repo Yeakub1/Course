@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mongoose from 'mongoose';
 import { Courses } from './Course.modle';
 import { TCourse } from './Course.interface';
 import buildQuery, { QueryParams } from '../../buillder/buildQuery';
+import mongoose, { Error, Types } from 'mongoose';
 
 const createCourseIntoDB = async (payload: TCourse) => {
   const result = await Courses.create(payload);
@@ -89,7 +89,7 @@ const updateCourseFromDB = async (
         runValidators: true,
         session,
       },
-    );
+    ).populate('createdBy');
 
     if (!updatedBasiCourse) {
       throw new Error('Failed to update course Successfully');
@@ -97,6 +97,7 @@ const updateCourseFromDB = async (
     updatedResult = updatedBasiCourse;
     if (tags && tags.length > 0) {
       const deletedtags = tags
+        
         .filter((el) => el?.name && el?.isDeleted)
         .map((el) => el?.name);
 
@@ -149,16 +150,53 @@ const updateCourseFromDB = async (
   }
 };
 
+// const getSingleCourseReviewFromDb = async (courseId: string) => {
+//   const result = await Courses.findById(courseId)
+//     .populate('categoryId')
+//     .populate('createdBy')
+//    .populate('reviews')
+
+//   if (!result) {
+//     throw new Error('course is not found');
+//   }
+//   return result;
+// };
 const getSingleCourseReviewFromDb = async (courseId: string) => {
-  const result = await Courses.findById(courseId)
-    .populate('categoryId')
-    .populate('createdBy')
-   .populate('reviews')
-    
-  if (!result) {
-    throw new Error('course is not found');
+  const result = await Courses.aggregate([
+    {
+      $match: { _id: new Types.ObjectId(courseId) },
+    },
+    {
+      $lookup: {
+        from: 'categories', // Replace with the actual name of your categories collection
+        localField: '_id',
+        foreignField: 'categoryId',
+        as: 'category',
+      },
+    },
+    {
+      $lookup: {
+        from: 'users', // Replace with the actual name of your users collection
+        localField: 'createdBy',
+        foreignField: '_id',
+        as: 'createdByUser',
+      },
+    },
+    {
+      $lookup: {
+        from: 'reviews', // Replace with the actual name of your reviews collection
+        localField: '_id',
+        foreignField: 'courseId',
+        as: 'courseReviews',
+      },
+    },
+  ]);
+
+  if (result.length === 0) {
+    throw new Error('Course not found');
   }
-  return result;
+
+  return result[0]; // Assuming you expect only one result since you are querying by courseId
 };
 
 const getBestCourseFormDb = async () => {
@@ -166,6 +204,8 @@ const getBestCourseFormDb = async () => {
 
   return reslut;
 };
+
+
 
 export const courseServices = {
   createCourseIntoDB,

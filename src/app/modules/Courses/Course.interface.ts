@@ -1,5 +1,4 @@
 import { Model, Types } from "mongoose";
-import { TReview } from "../Reviews/Review.interface";
 
 export type TTag= {
   name: string;
@@ -24,7 +23,7 @@ export type TCourse = {
   durationInWeeks?: number;
   details: TCourseDetails;
   createdBy?: Types.ObjectId;
-  reviews?: TReview[];
+  reviews?: Types.ObjectId;
 };
 
 

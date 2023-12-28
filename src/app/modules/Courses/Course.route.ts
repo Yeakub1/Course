@@ -22,6 +22,10 @@ router.put(
 router.get('/', courseControllers.allCourseFiltaring);
 router.get('/:courseId', courseControllers.getSingleCourse);
 router.get('/:courseId/reviews', courseControllers.getSingleCourseReview);
-router.get('/best', courseControllers.getBestCourse);
+router.get(
+  '/best',
+  checkAuth(USER_ROLE.admin, USER_ROLE.user),
+  courseControllers.getBestCourse,
+);
 
 export const courseRoute = router;

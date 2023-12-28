@@ -34,6 +34,7 @@ const courseSchema = new Schema<TCourse>(
     durationInWeeks: { type: Number },
     details: { type: courseDetailsSchema, required: true },
     createdBy: { type: Schema.Types.ObjectId, ref: 'user' },
+    // reviews: { type: Schema.Types.ObjectId, ref: reviewModel },
   },
   {
     toJSON: {
@@ -42,15 +43,10 @@ const courseSchema = new Schema<TCourse>(
   },
 );
 
-courseSchema.virtual('reviews', {
-  ref: 'Review',
-  localField: '_id',
-  foreignField: 'courseId',
-  justOne: false,
-});
 
 courseSchema.set('toJSON', {
   transform: (doc, ret) => {
+    delete ret.password;
     delete ret.passwordHistory;
     delete ret.__v;
     return ret;
